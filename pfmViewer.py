@@ -148,13 +148,13 @@ class myApp(tk.Tk):
         if name:
             self.pfm_image = cv2.imread(name, cv2.IMREAD_UNCHANGED)
             if self.pfm_image is not None:
-                self.show_image()
+                self.show_image(True)
 
     def show_about_dialog(self):
         msg.showinfo('About...', '.pfm viewer version 0.0.1\nAuthor: Aous Naman')
 
-    def show_image(self):
-        if self.image_loaded == False:
+    def show_image(self, new_image=False):
+        if new_image:
             self.offset_entry.config(state=tk.NORMAL)
             self.scale_entry.config(state=tk.NORMAL)
             self.gamma_entry.config(state=tk.NORMAL)
@@ -165,6 +165,20 @@ class myApp(tk.Tk):
             self.filemenu.entryconfig("Save...", state=tk.NORMAL)
             self.zoommenu.entryconfig("In", state=tk.NORMAL)
             self.zoommenu.entryconfig("Out", state=tk.NORMAL)
+            if len(self.pfm_image.shape) == 2:  # one color
+                self.check_c0['state'] = tk.DISABLED
+                self.check_c1['state'] = tk.DISABLED
+                self.check_c2['state'] = tk.DISABLED
+                self.check_c0_var.set(0)
+                self.check_c1_var.set(0)
+                self.check_c2_var.set(0)
+            else:  # 3 colours
+                self.check_c0['state'] = tk.NORMAL
+                self.check_c1['state'] = tk.NORMAL
+                self.check_c2['state'] = tk.NORMAL
+                self.check_c0_var.set(1)
+                self.check_c1_var.set(1)
+                self.check_c2_var.set(1)
             self.image_loaded = True
 
         try:
@@ -215,20 +229,8 @@ class myApp(tk.Tk):
         t = np.multiply(s, np.power(np.abs(t), 1.0/gamma))
         self.display_image = np.minimum(np.maximum(np.multiply(t, 255), 0), 255).astype(np.ubyte)
         if len(self.display_image.shape) == 2:  # one color
-            self.check_c0.config(state=tk.DISABLED)
-            self.check_c1.config(state=tk.DISABLED)
-            self.check_c2.config(state=tk.DISABLED)
-            self.check_c0_var.set(0)
-            self.check_c1_var.set(0)
-            self.check_c2_var.set(0)
             image = cv2.merge((self.display_image, self.display_image, self.display_image))
         else:  # 3 colours
-            self.check_c0.config(state=tk.NORMAL)
-            self.check_c1.config(state=tk.NORMAL)
-            self.check_c2.config(state=tk.NORMAL)
-            self.check_c0_var.set(1)
-            self.check_c1_var.set(1)
-            self.check_c2_var.set(1)
             blue, green, red = cv2.split(self.display_image)
             zero = np.zeros(red.shape, blue.dtype)
             if self.check_c0_var.get() == 0:
@@ -239,7 +241,8 @@ class myApp(tk.Tk):
                 blue = zero
             image = cv2.merge((red, green, blue))
 
-        image = cv2.resize(image, np.flip(image.shape[0:2]) * int(self.zoom_multiplier), interpolation=cv2.INTER_NEAREST)
+        image = cv2.resize(image, np.flip(image.shape[0:2]) * int(self.zoom_multiplier),
+                           interpolation=cv2.INTER_NEAREST)
         image_array = Image.fromarray(image)
         self.image_tk = ImageTk.PhotoImage(image=image_array)
         self.image_canvas.config(scrollregion=(0,0,image.shape[1],image.shape[0]))
