@@ -1,4 +1,5 @@
 import os
+import sys
 
 import tkinter as tk
 import tkinter.filedialog as fd
@@ -148,6 +149,7 @@ class myApp(tk.Tk):
         if name:
             self.pfm_image = cv2.imread(name, cv2.IMREAD_UNCHANGED)
             if self.pfm_image is not None:
+                self.title(name)
                 self.show_image(True)
 
     def show_about_dialog(self):
@@ -283,6 +285,12 @@ class myApp(tk.Tk):
 
 def main():
     app = myApp()
+    if len(sys.argv) > 1:
+        app.pfm_image = cv2.imread(sys.argv[1], cv2.IMREAD_UNCHANGED)
+        if app.pfm_image is not None:
+            app.title(sys.argv[0])
+            app.show_image(True)
+
     app.mainloop()
 
 if __name__ == "__main__":
