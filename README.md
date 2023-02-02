@@ -3,7 +3,7 @@ pfmViewer is a tool for viewoing .pfm files, where you can make adjustment to
 the image. To be more specific, we give a demo here.
 
 For an image with intensity $I[\mathbf{x}]$, the code employs the following formula
-$$ \left( \frac{I[\mathbf{x}] - \text{offset}}{\text{divider}} \right)^{1/\gamma} $$
+$\left( \frac{I[\mathbf{x}] - \text{offset}}{\text{divider}} \right)^{1/\gamma}$
 
 For this demo, you need the 
 [memorial.pfm](http://www.pauldebevec.com/Research/HDR/memorial.pfm)
